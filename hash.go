@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"hash"
 	"math"
+	"strings"
 )
 
 // Hash exposes the underlying hash.Hash definition.
@@ -33,7 +34,9 @@ func New(h string) (hash.Hash, error) {
 	case "md5":
 		return md5.New(), nil
 	case "git":
-		return &git{}, nil
+		return &git{kind: "blob"}, nil
+	case strings.Contains(g, "git-"):
+		return &git{kind: strings.Replace(h, "git-", "", 1)}, nil
 	case "":
 		return Default, nil
 	default:
@@ -51,5 +54,7 @@ func ByteCountToString(bytes uint64) string {
 	}
 	exp := uint64(math.Log2(float64(bytes)) / math.Log2(float64(unit)))
 	char := string("kMGTPE"[exp-1])
-	return fmt.Sprintf("%7.2f %sB", float64(bytes)/math.Pow(float64(unit), float64(exp)), char)
+	return fmt.Sprintf("%7.2f %sB",
+		float64(bytes)/math.Pow(float64(unit),
+			float64(exp)), char)
 }

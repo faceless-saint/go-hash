@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"hash"
 	"io/ioutil"
-    "regexp"
-    "strings"
+	"regexp"
+	"strings"
 )
 
 // Checksum describes a copmuted checksum and the hash algorithm used.
@@ -17,14 +17,14 @@ type Checksum struct {
 // IsValid returns true iff the Checksum is valid. Note that this checks
 // the formatting of the checksum string itself, not related to a file.
 func (this *Checksum) IsValid() bool {
-    if this.Hash == nil {
-        return false
-    }
-    if len(this.Value) != (*this.Hash).Size()*2 {
-        return false
-    }
-    test, _ := regexp.MatchString("^[a-fA-F0-9]+$", this.Value)
-    return test
+	if this.Hash == nil {
+		return false
+	}
+	if len(this.Value) != (*this.Hash).Size()*2 {
+		return false
+	}
+	test, _ := regexp.MatchString("^[a-fA-F0-9]+$", this.Value)
+	return test
 }
 
 // ChecksumFromString attempts to parse a string using the following
@@ -32,15 +32,15 @@ func (this *Checksum) IsValid() bool {
 // is omitted then the default algorithm is used.
 func ChecksumFromString(str string) (*Checksum, error) {
 	raw := strings.SplitN(str, ":", 2)
-    if len(raw) < 2 {
-        return &Checksum{raw[0], &Default}, nil
-    }
-    h, err := New(raw[0])
-    if err != nil {
-        return nil, err
-    }
-    return &Checksum{raw[1], &h}, nil
-    
+	if len(raw) < 2 {
+		return &Checksum{raw[0], &Default}, nil
+	}
+	h, err := New(raw[0])
+	if err != nil {
+		return nil, err
+	}
+	return &Checksum{raw[1], &h}, nil
+
 }
 
 // ByteChecksum computes the checksum for the given bytes and hash
@@ -48,10 +48,10 @@ func ByteChecksum(data []byte, h hash.Hash) *Checksum {
 	if h == nil {
 		h = Default
 	}
-    h.Write(data)
+	h.Write(data)
 	checksum := fmt.Sprintf("%x", h.Sum(nil))
 	h.Reset()
-    return &Checksum{checksum, &h}
+	return &Checksum{checksum, &h}
 }
 
 // StringChecksum computes the checksum for the given string and hash
